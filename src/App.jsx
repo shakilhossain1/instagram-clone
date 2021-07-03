@@ -12,7 +12,6 @@ function App() {
           <Route path={ROUTES.LOGIN} component={Login} />
         </Switch>
       </Suspense>
-      <div className="bg-blue-500">Hello world okay hello okay</div>
     </Router>
   )
 }
