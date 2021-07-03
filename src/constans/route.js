@@ -1,3 +1,3 @@
 export const LOGIN = '/login';
 export const DASHBOARD = '/';
-export const SINGUP = '/sign-up';
+export const SING_UP = '/sign-up';

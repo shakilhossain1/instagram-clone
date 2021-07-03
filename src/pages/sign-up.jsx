@@ -2,11 +2,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import FirebaseContext from '../context/firebase';
 import * as ROUTES from '../constans/route';
+import { doesUsernameExists } from '../services/firebase';
 
-function Login() {
+function SignUp() {
   const history = useHistory();
   const { firebase } = useContext(FirebaseContext);
 
+  const [username, setUsername] = useState('');
+  const [fullname, setFullname] = useState('');
   const [emailAddress, setEamilAddress] = useState('');
   const [passoword, setPassword] = useState('');
 
@@ -14,16 +17,43 @@ function Login() {
   const isInvalid = passoword === '' || emailAddress === '';
 
   useEffect(() => {
-    document.title = 'Login - Intagram';
+    document.title = 'Signup - Intagram';
   }, []);
 
-  const handleLogin = async e => {
+  const handleSignUp = async e => {
     e.preventDefault();
 
+    const userNameExists = await doesUsernameExists(username);
+    console.log('usernameExists', userNameExists);
+
+    if (userNameExists) {
+      setUsername('');
+      setError('This usernam allready exists');
+      return;
+    }
+
     try {
-      await firebase.auth().signInWithEmailAndPassword(emailAddress, passoword);
+      const createdUser = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(emailAddress, passoword);
+
+      await createdUser.user.updateProfile({
+        displayName: username,
+      });
+
+      await firebase.firestore().collection('users').add({
+        userId: createdUser.user.uid,
+        username: username.toLowerCase(),
+        fullname,
+        emailAddress,
+        following: [],
+        dateCreated: Date.now(),
+      });
+
       history.push(ROUTES.DASHBOARD);
     } catch (error) {
+      setFullname('');
+      setUsername('');
       setEamilAddress('');
       setPassword('');
       setError(error.message);
@@ -48,8 +78,28 @@ function Login() {
               className="mt-2 w-6/12"
             />
           </h1>
-          {error && <p className="text-red-primary font-bold text-center m-2 text-xs mb-4">{error}</p>}
-          <form onSubmit={handleLogin} method="POST">
+          {error && (
+            <p className="text-red-primary text-center font-bold m-2 text-xs mb-4">
+              {error}
+            </p>
+          )}
+          <form onSubmit={handleSignUp} method="POST">
+            <input
+              aria-label="Enter Your Full Name"
+              placeholder="Full Name"
+              className="text-sm text-gray-base w-full mr-3 mt-4 py-5 px-4 h-2 rounded border border-gray-primary outline-none"
+              type="text"
+              onChange={({ target }) => setFullname(target.value)}
+              value={fullname}
+            />
+            <input
+              aria-label="Enter Your User Name"
+              placeholder="User Name"
+              className="text-sm text-gray-base w-full mr-3 mt-4 py-5 px-4 h-2 rounded border border-gray-primary outline-none"
+              type="text"
+              onChange={({ target }) => setUsername(target.value)}
+              value={username}
+            />
             <input
               aria-label="Enter Your email address"
               placeholder="Email address"
@@ -73,15 +123,15 @@ function Login() {
               bg-blue-medium text-white w-full h-8 font-bold mt-2
               ${isInvalid && ' opacity-50 cursor-not-allowed'}`}
             >
-              Log In
+              Sign Up
             </button>
           </form>
         </div>
         <div className="flex rounded justify-center items-center flex-col w-full bg-white p-4 border border-gray-primary mt-4">
           <p className="text-sm">
-            Don't have an account?{' '}
-            <Link to={ROUTES.SING_UP} className="font-bold text-blue-medium">
-              Sign Up
+            Allready a user?{' '}
+            <Link to={ROUTES.LOGIN} className="font-bold text-blue-medium">
+              Login
             </Link>
           </p>
         </div>
@@ -90,4 +140,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default SignUp;
