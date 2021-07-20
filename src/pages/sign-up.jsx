@@ -3,6 +3,9 @@ import { Link, useHistory } from 'react-router-dom';
 import FirebaseContext from '../context/firebase';
 import * as ROUTES from '../constans/route';
 import { doesUsernameExists } from '../services/firebase';
+import tw from 'twin.macro';
+
+const Container = tw.div`container flex max-w-screen-md mx-auto items-center h-screen`;
 
 function SignUp() {
   const history = useHistory();
@@ -61,7 +64,7 @@ function SignUp() {
   };
 
   return (
-    <div className="container flex max-w-screen-md mx-auto items-center h-screen">
+    <Container>
       <div className="flex w-3/5">
         <img
           src="/images/iphone-with-profile.jpg"
@@ -136,7 +139,7 @@ function SignUp() {
           </p>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }
 

@@ -4,14 +4,18 @@ import UserContext from "../context/user";
 import * as ROUTES from "../constans/route";
 import { Link } from "react-router-dom";
 import { HomeIcon, LogoutIcon } from "@heroicons/react/outline";
+import tw from 'twin.macro';
+
+const Wrapper = tw.header`h-16 bg-white border-b border-gray-primary mb-8`;
+const Container = tw.div`container mx-auto max-w-screen-lg h-full`
 
 function Header() {
   const { firebase } = useContext(FirebaseContext);
   const { user } = useContext(UserContext);
 
   return (
-    <header className="h-16 bg-white border-b border-gray-primary mb-8">
-      <div className="container mx-auto max-w-screen-lg h-full">
+    <Wrapper>
+      <Container>
         <div className="flex justify-between h-full">
           <div className="text-gray-700 text-center flex cursor-pointer items-center">
             <h1 className="flex justify-center w-full">
@@ -64,8 +68,8 @@ function Header() {
             )}
           </div>
         </div>
-      </div>
-    </header>
+      </Container>
+    </Wrapper>
   );
 }
 
